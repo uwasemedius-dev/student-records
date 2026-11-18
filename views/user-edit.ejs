@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<h1>Edit User: <%= u.username %></h1>
+<% if (error) { %><p style="color:#ff8a80;"><%= error %></p><% } %>
+
+<form method="POST" action="/users/<%= u._id %>?_method=PUT">
+  <p>
+    <label>Role</label><br>
+    <select name="role">
+      <option value="teacher" <%= u.role === 'teacher' ? 'selected' : '' %>>Teacher</option>
+      <option value="student" <%= u.role === 'student' ? 'selected' : '' %>>Student</option>
+      <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
+    </select>
+  </p>
+  <p>
+    <label>Linked student record (students only)</label><br>
+    <select name="studentRef">
+      <option value="">-- none --</option>
+      <% students.forEach(function(s) { %>
+        <option value="<%= s._id %>" <%= String(u.studentRef) === String(s._id) ? 'selected' : '' %>><%= s.studentId %> - <%= s.firstName %> <%= s.lastName %></option>
+      <% }) %>
+    </select>
+  </p>
+  <p>
+    <label>Reset password (leave empty to keep the current one)</label><br>
+    <input name="newPassword" type="password" placeholder="New temporary password (min 8 characters)">
+  </p>
+  <button type="submit" class="btn">Save changes</button>
+  <a href="/users" style="color:#ffd54f; margin-left:12px;">Cancel</a>
+</form>
+
+<%- include('partials/footer') %>

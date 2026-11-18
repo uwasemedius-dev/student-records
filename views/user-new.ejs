@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+<h1>Create User</h1>
+<% if (error) { %><p style="color:#ff8a80;"><%= error %></p><% } %>
+
+<form method="POST" action="/users">
+  <p><input name="username" placeholder="Username (staff name or Student ID)" value="<%= form.username || '' %>" required></p>
+  <p><input name="password" type="password" placeholder="Temporary password (min 8 characters)" required></p>
+  <p>
+    <select name="role">
+      <option value="teacher" <%= form.role === 'teacher' ? 'selected' : '' %>>Teacher</option>
+      <option value="student" <%= form.role === 'student' ? 'selected' : '' %>>Student</option>
+      <option value="admin" <%= form.role === 'admin' ? 'selected' : '' %>>Admin</option>
+    </select>
+  </p>
+  <p>
+    <select name="studentRef">
+      <option value="">-- link to student record (students only) --</option>
+      <% students.forEach(function(s) { %>
+        <option value="<%= s._id %>" <%= String(form.studentRef) === String(s._id) ? 'selected' : '' %>><%= s.studentId %> - <%= s.firstName %> <%= s.lastName %></option>
+      <% }) %>
+    </select>
+  </p>
+  <p class="muted">The person will be forced to choose their own password at first login.</p>
+  <button type="submit" class="btn">Create</button>
+  <a href="/users" style="color:#ffd54f; margin-left:12px;">Cancel</a>
+</form>
+
+<%- include('partials/footer') %>

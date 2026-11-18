@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<h1>My Record</h1>
+
+<p>
+  <a href="/account" style="color:#ffd54f; font-weight:600;">Change Password</a>
+  <form method="POST" action="/logout" style="display:inline; margin-left:10px;">
+    <button type="submit" class="btn btn-small btn-secondary">Logout</button>
+  </form>
+</p>
+
+<% if (student) { %>
+  <p><strong>Student ID:</strong> <%= student.studentId %></p>
+  <p><strong>Name:</strong> <%= student.firstName %> <%= student.lastName %></p>
+  <p><strong>Email:</strong> <%= student.email %></p>
+  <p><strong>Course:</strong> <%= student.course %> &nbsp; <strong>Year:</strong> <%= student.yearOfStudy %></p>
+
+  <h2>My Grades</h2>
+  <% if (grades.length === 0) { %>
+    <p class="empty-state">No grades have been recorded yet.</p>
+  <% } else { %>
+    <table class="data-table">
+      <thead><tr><th>Semester</th><th>Course unit</th><th>Marks</th><th>Grade</th></tr></thead>
+      <tbody>
+        <% grades.forEach(function(g) { %>
+          <tr><td><%= g.semester %></td><td><%= g.courseUnit %></td><td><%= g.marks %></td><td><strong><%= g.letter %></strong></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <p><strong>Average marks:</strong> <%= average %></p>
+  <% } %>
+<% } else { %>
+  <p>No student record is linked to your account yet. Please contact the admin.</p>
+<% } %>
+
+<%- include('partials/footer') %>

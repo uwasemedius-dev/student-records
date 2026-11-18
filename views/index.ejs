@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<h1>Student Records</h1>
+
+<% if (typeof success !== 'undefined' && success) { %>
+  <p class="alert alert-success"><%= success %></p>
+<% } %>
+
+<% if (typeof search !== 'undefined' && search) { %>
+  <p class="muted">Showing results for "<%= search %>" — <a href="/students">clear search</a></p>
+<% } %>
+
+<form action="/students" method="GET" class="search-bar">
+  <input
+    type="text"
+    name="search"
+    placeholder="Search by name, Student ID, or course..."
+    value="<%= typeof search !== 'undefined' ? search : '' %>"
+  />
+  <button type="submit" class="btn btn-secondary">Search</button>
+</form>
+
+<% if (students.length === 0) { %>
+  <p class="empty-state">No students found.</p>
+<% } else { %>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Student ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Course</th>
+      <th>Year</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% students.forEach(function(student) { %>
+    <tr>
+      <td><%= student.studentId %></td>
+      <td><%= student.lastName %>, <%= student.firstName %></td>
+      <td><%= student.email %></td>
+      <td><%= student.course %></td>
+      <td><%= student.yearOfStudy %></td>
+      <td class="actions">
+        <a href="/students/<%= student._id %>/edit" class="btn btn-small btn-edit">Edit</a>
+        <form
+          action="/students/<%= student._id %>?_method=DELETE"
+          method="POST"
+          style="display:inline"
+          onsubmit="return confirm('Are you sure you want to delete ' + '<%= student.firstName %> <%= student.lastName %>' + '? This cannot be undone.');"
+        >
+          <button type="submit" class="btn btn-small btn-delete">Delete</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } %>
+
+<%- include('partials/footer') %>

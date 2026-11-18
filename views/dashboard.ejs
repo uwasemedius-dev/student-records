@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<h1>Dashboard</h1>
+<p><a href="/students" style="color:#ffd54f;">&laquo; Back to students</a></p>
+
+<p><strong>Total students:</strong> <%= totalStudents %> &nbsp;|&nbsp; <strong>Grades recorded:</strong> <%= totalGrades %></p>
+
+<% if (currentUser.role === 'admin') { %>
+<p><strong>Accounts:</strong>
+  <% byRole.forEach(function(r) { %><%= r._id %>: <%= r.count %> &nbsp; <% }) %>
+</p>
+<% } %>
+
+<h2>Students per course</h2>
+<% const maxC = Math.max(1, ...byCourse.map(c => c.count)); %>
+<% byCourse.forEach(function(c) { %>
+  <div style="margin:6px 0;">
+    <%= c._id || '(none)' %> (<%= c.count %>)
+    <div style="background:#ffd54f; height:14px; border-radius:7px; width:<%= Math.round(c.count / maxC * 100) %>%;"></div>
+  </div>
+<% }) %>
+
+<h2>Students per year</h2>
+<% const maxY = Math.max(1, ...byYear.map(c => c.count)); %>
+<% byYear.forEach(function(y) { %>
+  <div style="margin:6px 0;">
+    Year <%= y._id == null ? '?' : y._id %> (<%= y.count %>)
+    <div style="background:#ffd54f; height:14px; border-radius:7px; width:<%= Math.round(y.count / maxY * 100) %>%;"></div>
+  </div>
+<% }) %>
+
+<%- include('partials/footer') %>

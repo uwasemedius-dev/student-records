@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+<h1><%= student.firstName %> <%= student.lastName %></h1>
+<p><a href="/students" style="color:#ffd54f;">&laquo; Back to students</a></p>
+
+<% if (success) { %><p class="alert alert-success"><%= success %></p><% } %>
+<% if (error) { %><p style="color:#ff8a80;"><%= error %></p><% } %>
+
+<p><strong>Student ID:</strong> <%= student.studentId %></p>
+<p><strong>Email:</strong> <%= student.email %></p>
+<p><strong>Phone:</strong> <%= student.phone || '-' %></p>
+<p><strong>Course:</strong> <%= student.course %> &nbsp; <strong>Year:</strong> <%= student.yearOfStudy %></p>
+
+<h2>Grades</h2>
+<% if (grades.length === 0) { %>
+  <p class="empty-state">No grades recorded yet.</p>
+<% } else { %>
+<table class="data-table">
+  <thead><tr><th>Semester</th><th>Course unit</th><th>Marks</th><th>Grade</th><th>By</th><th></th></tr></thead>
+  <tbody>
+    <% grades.forEach(function(g) { %>
+    <tr>
+      <td><%= g.semester %></td>
+      <td><%= g.courseUnit %></td>
+      <td><%= g.marks %></td>
+      <td><strong><%= g.letter %></strong></td>
+      <td><%= g.recordedBy %></td>
+      <td>
+        <form action="/grades/<%= g._id %>?_method=DELETE" method="POST" style="display:inline"
+              onsubmit="return confirm('Delete this grade?');">
+          <button type="submit" class="btn btn-small btn-delete">Delete</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+<p><strong>Average marks:</strong> <%= average %></p>
+<% } %>
+
+<h3>Add a grade</h3>
+<form action="/grades/student/<%= student._id %>" method="POST">
+  <input name="semester" placeholder="Semester e.g. 2026 Sem 1" required>
+  <input name="courseUnit" placeholder="Course unit e.g. BIT 2101" required>
+  <input name="marks" type="number" min="0" max="100" step="0.1" placeholder="Marks (0-100)" required>
+  <button type="submit" class="btn btn-small">Save grade</button>
+</form>
+
+<%- include('partials/footer') %>
