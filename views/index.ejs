@@ -2,21 +2,41 @@
 
 <h1>Student Records</h1>
 
+<%
+  const link = (o) => {
+    const p = Object.assign({ search: search, sort: sort, dir: dir, page: page }, o);
+    const q = new URLSearchParams();
+    Object.keys(p).forEach((k) => { if (p[k] !== '' && p[k] != null) q.set(k, p[k]); });
+    return '/students?' + q.toString();
+  };
+  const sortLink = (f) => link({ sort: f, dir: (sort === f && dir === 'asc') ? 'desc' : 'asc', page: 1 });
+  const arrow = (f) => sort === f ? (dir === 'asc' ? ' ▲' : ' ▼') : '';
+%>
+
+<div style="margin-bottom:12px;">
+  <span class="muted">Logged in as <strong><%= currentUser.username %></strong> (<%= currentUser.role %>)</span>
+  | <a href="/dashboard" style="color:#ffd54f; font-weight:600;">Dashboard</a>
+  | <a href="/students/export.csv" style="color:#ffd54f; font-weight:600;">Export CSV</a>
+  <% if (currentUser.role === 'admin') { %>
+    | <a href="/users" style="color:#ffd54f; font-weight:600;">Manage Users</a>
+    | <a href="/audit" style="color:#ffd54f; font-weight:600;">Audit Log</a>
+  <% } %>
+  | <a href="/account" style="color:#ffd54f; font-weight:600;">Change Password</a>
+  <form action="/logout" method="POST" style="display:inline; margin-left:10px;">
+    <button type="submit" class="btn btn-small btn-secondary">Logout</button>
+  </form>
+</div>
+
 <% if (typeof success !== 'undefined' && success) { %>
   <p class="alert alert-success"><%= success %></p>
 <% } %>
 
-<% if (typeof search !== 'undefined' && search) { %>
-  <p class="muted">Showing results for "<%= search %>" — <a href="/students">clear search</a></p>
+<% if (search) { %>
+  <p class="muted">Showing results for "<%= search %>" — <a href="/students" style="color:#ffd54f;">clear search</a></p>
 <% } %>
 
 <form action="/students" method="GET" class="search-bar">
-  <input
-    type="text"
-    name="search"
-    placeholder="Search by name, Student ID, or course..."
-    value="<%= typeof search !== 'undefined' ? search : '' %>"
-  />
+  <input type="text" name="search" placeholder="Search by name, Student ID, or course..." value="<%= search %>" />
   <button type="submit" class="btn btn-secondary">Search</button>
 </form>
 
@@ -26,11 +46,11 @@
 <table class="data-table">
   <thead>
     <tr>
-      <th>Student ID</th>
-      <th>Name</th>
+      <th><a href="<%= sortLink('studentId') %>" style="color:inherit;">Student ID<%= arrow('studentId') %></a></th>
+      <th><a href="<%= sortLink('lastName') %>" style="color:inherit;">Name<%= arrow('lastName') %></a></th>
       <th>Email</th>
-      <th>Course</th>
-      <th>Year</th>
+      <th><a href="<%= sortLink('course') %>" style="color:inherit;">Course<%= arrow('course') %></a></th>
+      <th><a href="<%= sortLink('yearOfStudy') %>" style="color:inherit;">Year<%= arrow('yearOfStudy') %></a></th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -43,20 +63,34 @@
       <td><%= student.course %></td>
       <td><%= student.yearOfStudy %></td>
       <td class="actions">
+        <a href="/students/<%= student._id %>" class="btn btn-small btn-secondary">View</a>
         <a href="/students/<%= student._id %>/edit" class="btn btn-small btn-edit">Edit</a>
+        <% if (currentUser.role === 'admin') { %>
         <form
           action="/students/<%= student._id %>?_method=DELETE"
           method="POST"
           style="display:inline"
-          onsubmit="return confirm('Are you sure you want to delete ' + '<%= student.firstName %> <%= student.lastName %>' + '? This cannot be undone.');"
+          data-name="<%= student.firstName %> <%= student.lastName %>"
+          onsubmit="return confirm('Delete ' + this.dataset.name + '? This also removes their login and grades and cannot be undone.');"
         >
           <button type="submit" class="btn btn-small btn-delete">Delete</button>
         </form>
+        <% } %>
       </td>
     </tr>
     <% }) %>
   </tbody>
 </table>
+
+<div style="margin-top:14px;">
+  <% if (page > 1) { %>
+    <a href="<%= link({ page: page - 1 }) %>" class="btn btn-small btn-secondary">&laquo; Prev</a>
+  <% } %>
+  <span class="muted" style="margin:0 10px;">Page <%= page %> of <%= pages %> &middot; <%= total %> students</span>
+  <% if (page < pages) { %>
+    <a href="<%= link({ page: page + 1 }) %>" class="btn btn-small btn-secondary">Next &raquo;</a>
+  <% } %>
+</div>
 <% } %>
 
 <%- include('partials/footer') %>

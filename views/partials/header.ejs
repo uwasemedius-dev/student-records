@@ -8,7 +8,9 @@
 </head>
 <body>
   <nav class="navbar">
-    <a href="/students" class="brand">🎓 Student Records</a>
-    <a href="/students/new" class="btn btn-primary">+ Add Student</a>
+    <a href="<%= (typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'student') ? '/my-record' : '/students' %>" class="brand">🎓 Student Records</a>
+    <% if (typeof currentUser !== 'undefined' && currentUser && currentUser.role === 'admin') { %>
+      <a href="/students/new" class="btn btn-primary">+ Add Student</a>
+    <% } %>
   </nav>
   <main class="container">
